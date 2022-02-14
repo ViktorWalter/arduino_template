@@ -14,7 +14,7 @@ CPP = avr-g++
 AR = avr-ar
 OBJ_COPY = avr-objcopy
 
-MAIN_SKETCH = main.cpp
+MAIN_SKETCH = sketch.cpp
 ON_SKETCH = on.cpp
 
 # compile flags for g++ and gcc
