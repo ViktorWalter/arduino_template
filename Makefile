@@ -14,7 +14,7 @@ CPP = avr-g++
 AR = avr-ar
 OBJ_COPY = avr-objcopy
 
-MAIN_SKETCH = main.cpp
+MAIN_SKETCH = sketch.cpp
 ON_SKETCH = on.cpp
 
 # compile flags for g++ and gcc
@@ -36,8 +36,8 @@ LIBRARY_DIR = "$(ARDUINO_DIR)hardware/arduino/cores/arduino/"
 
 #board
 CHIP = ATMEGA328P
-BAUD = 57600
-PORT = /dev/ttyUSB0
+BAUD = 115200
+PORT = /dev/ttyACM1
 
 all:
 	$(CC) $(CC_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR) $(MAIN_SKETCH) -o $(MAIN_SKETCH).o 
