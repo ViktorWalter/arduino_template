@@ -1,10 +1,10 @@
 #include <Arduino.h>
 
-#define rows 6 //X
+#define rows 8 //X
 #define columns 2 //Y
 #define layers 1 //Z
 
-#define lowbit_row 2 //pin of the lowest bit
+#define lowbit_row 0 //pin of the lowest bit
 #define lowbit_column 0 //pin of the lowest bit
 #define lowbit_layer 0 //pin of the lowest bit
 
@@ -19,11 +19,11 @@ unsigned char slider_column = 1;
 /* unsigned char slider_layer_start = 1; */
 unsigned char slider_layer = 1;
 
-unsigned char MSG[] = {B00100000, B00110000};
+unsigned char MSG[] = {B00100100, B00110000};
 unsigned char buffer[] = {B00000000, B00000000};
 
 unsigned int step = 0;
-unsigned int move_speed = 100;
+unsigned int move_speed = 1000;
 
 void setup() {
   /* pinMode(LED1,OUTPUT); */
@@ -60,12 +60,12 @@ void display_values(unsigned char* input){
       /* slider_row = slider_row_start; */
       for (int i=0; i<rows; i++){
         PORTD = slider_row & input[j];
-        /* delay(1000); */
+        delay(1);
         slider_row = rotate(slider_row,rows);
       }
-      slider_column = rotate(slider_column,rows);
+      slider_column = rotate(slider_column,columns);
     }
-    slider_layer = rotate(slider_layer,rows);
+    slider_layer = rotate(slider_layer,layers);
   }
 }
 
