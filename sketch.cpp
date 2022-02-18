@@ -87,7 +87,7 @@ void display_values(matrix3D input){
         /* PORTB = j+1; */
     }
     /* PORTB = 0; */
-    delay(0.1);
+    delay(1.0);
     // The RMS value of PWM is its amplitude times the square root of its duty cycle.
     // Each layer has duty cycle of 1/8 by design
     // My LEDs have peak forward current of 100mA, specified at 1/10 duty cycle with 0.1 pulse width
