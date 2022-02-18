@@ -2,7 +2,7 @@
 
 #define rows 4 //X
 #define columns 2 //Y
-#define layers 2 //Z
+#define layers 8 //Z
 
 #define lowbit_row 0 //pin of the lowest bit
 #define lowbit_column 0 //pin of the lowest bit
@@ -38,7 +38,7 @@ void setup() {
   /* DDRD = B11111111; */
   DDRD = (((unsigned char)1)<<rows)-1;
 
-  DDRB = B00000001;
+  DDRB = B00000111;
 
   DDRC = B00000001;
 
@@ -67,24 +67,32 @@ unsigned char rotate(unsigned char input,int len){
 
 void display_values(matrix3D input){
   /* slider_layer = slider_layer_start; */
-  for (unsigned int k=0; k<layers; k++){
+  for (unsigned char k=0; k<layers; k++){
     /* slider_column = slider_column_start; */
     PORTC = k;
-    PORTB = 0;
-    for (unsigned int j=0; j<columns; j++){
+    /* PORTB = 0; */
+    for (unsigned char j=0; j<columns; j++){
       /* PORTB = ~slider_column; */
       /* PORTB = B11111111; */
       /* slider_row = slider_row_start; */
       /* for (int i=0; i<rows; i++){ */
         /* PORTD = slider_row & input[j]; */
+        PORTB = j;
         PORTD = input[k][j];
+        PORTB = j+1;
         /* slider_row = rotate(slider_row,rows); */
       /* } */
       /* slider_column = rotate(slider_column,columns); */
-        PORTB = j+1;
         /* delay(1); */
+        /* PORTB = j+1; */
     }
-    delay(1);
+    /* PORTB = 0; */
+    delay(0.1);
+    // The RMS value of PWM is its amplitude times the square root of its duty cycle.
+    // Each layer has duty cycle of 1/8 by design
+    // My LEDs have peak forward current of 100mA, specified at 1/10 duty cycle with 0.1 pulse width
+    // This means that it is at T=10*0.1=1ms.
+
     /* slider_layer = rotate(slider_layer,layers); */
   }
 }
