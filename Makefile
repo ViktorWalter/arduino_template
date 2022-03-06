@@ -24,7 +24,7 @@ F_CPU = 16000000
 MCU = atmega328p
 
 # compile flags
-GENERAL_FLAGS = -c -g -Os -Wall -ffunction-sections -fdata-sections -mmcu=$(MCU) -DF_CPU=$(F_CPU)L -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=106
+GENERAL_FLAGS = -c -g -Os -w -ffunction-sections -fdata-sections -mmcu=$(MCU) -DF_CPU=$(F_CPU)L -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=106
 CPP_FLAGS = $(GENERAL_FLAGS) -fno-exceptions
 CC_FLAGS  = $(GENERAL_FLAGS)
 
