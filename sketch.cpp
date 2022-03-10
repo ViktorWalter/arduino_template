@@ -8,6 +8,9 @@
 #define lowbit_column 0 //pin of the lowest bit
 #define lowbit_layer 0 //pin of the lowest bit
 
+#define split_demux true
+/* #define split_demux false */
+
 /* int LED1 = 2; */
 
 /* unsigned char slider_row_start = 1; */
@@ -35,13 +38,19 @@ unsigned int offset = 0;
 /* unsigned long move_speed = 10; */
 /* unsigned int move_speed = 0; */
 unsigned long move_speed = 1;
+/* unsigned long move_speed = 5; */
 
 void setup() {
   cli();                      //stop interrupts for till we make the settings */
   /* pinMode(LED1,OUTPUT); */
 
   /* DDRD = B11111111; */
-  DDRD = (((unsigned char)1)<<rows)-1;
+  if (split_demux){
+    DDRD = B11111111;
+  }
+  else {
+    DDRD = (((unsigned char)1)<<rows)-1;
+  }
 
   DDRB = B00000011;
 
@@ -89,23 +98,43 @@ void display_values(){
   /* slider_layer = slider_layer_start; */
   unsigned long rand_offset = random(4);
   /* unsigned long rand_offset = 0; */
-  for (unsigned char k=0; k<layers; k++){
-    unsigned long layer_active = ((k+rand_offset)%layers); //To equalize the apparent increased brigthness on latest layers due to synchronicity with buffer rewriting.
+  /* for (unsigned char k=0; k<layers; k++){ */
+  for (unsigned char k=0; k<8; k++){
+    /* unsigned long layer_active = ((k+rand_offset)%layers); //To equalize the apparent increased brigthness on latest layers due to synchronicity with buffer rewriting. */
+    /* unsigned char layer_active = ((k+rand_offset)%8); //To equalize the apparent increased brigthness on latest layers due to synchronicity with buffer rewriting. */
     /* for (unsigned char k=0; k<8; k++){ */
     /* slider_column = slider_column_start; */
     /* PORTC = k; */
     /* PORTB = 0; */
-    for (unsigned char j=0; j<columns; j++){
+    /* PORTC = B00000001 << layer_active; */
+    unsigned long layer_active = (k); //To equalize the apparent increased brigthness on latest layers due to synchronicity with buffer rewriting.
+    PORTC = layer_active;
+    int skip_column = (split_demux?2:1);
+    for (unsigned char j=0; j<(columns); j += (skip_column)){
       /* PORTB = ~slider_column; */
       /* PORTB = B11111111; */
       /* slider_row = slider_row_start; */
       /* for (int i=0; i<rows; i++){ */
         /* PORTD = slider_row & input[j]; */
         /* delay(0.5); */
-        PORTD = buffer[layer_active][j];
-        /* PORTD = input[k][j]; */
-        PORTB = j;
-        PORTB = j+1;
+
+      unsigned char subbuffer_curr;
+      if (split_demux){
+        subbuffer_curr = buffer[layer_active][j] | buffer[layer_active][j+1] << 4;
+      }
+      else {
+        subbuffer_curr = buffer[layer_active][j];
+      }
+        
+      if (j >= 2) {
+        PORTD = ~subbuffer_curr;
+      }
+      else{
+        PORTD = subbuffer_curr;
+      }
+      /* PORTD = input[k][j]; */
+      PORTB = j;
+      PORTB = j+1;
         /* delay(1.0); */
         /* slider_row = rotate(slider_row,rows); */
       /* } */
@@ -114,9 +143,10 @@ void display_values(){
     /* delay(1.0); */
     }
     /* PORTB = 0; */
-    PORTC = B00000001 << layer_active;
-    /* PORTC = B00000001 << k; */
+    /* delay(1.0); */
     delay(1.0);
+    /* PORTC = B00000001 << k; */
+    /* delay(1.0); */
     /* PORTD = B00000000; */
     // The RMS value of PWM is its amplitude times the square root of its duty cycle.
     // Each layer has duty cycle of 1/8 by design
@@ -253,9 +283,9 @@ void copy_array_to_buffer(const matrix3D input){
 }
 
 void make_contents(unsigned int offset){
-  /* make_sine(MSG,offset); */
+  make_sine(MSG,offset);
     /* set_full(MSG,offset%2); */
-    set_full(MSG,true);
+    /* set_full(MSG,true); */
 }
 
 ISR(TIMER1_COMPA_vect){
