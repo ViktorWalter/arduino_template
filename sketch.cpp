@@ -291,10 +291,15 @@ void make_edges(matrix3D input, unsigned long offset){
     for (int j=0; j<COLUMN_COUNT; j++){
       for (int k=0; k<ROW_COUNT; k++){
 
+        /* unsigned char is_edge = ( */
+        /*     ((i == 0) || (i == LAYER_COUNT-1)) + */
+        /*     ((j == 0) || (j == COLUMN_COUNT-1)) + */
+        /*     ((k == 0) || (k == ROW_COUNT-1)) */
+        /*     ); */
         unsigned char is_edge = (
-            ((i == 0) || (i == LAYER_COUNT-1)) +
-            ((j == 0) || (j == COLUMN_COUNT-1)) +
-            ((k == 0) || (k == ROW_COUNT-1))
+            ((i == 0) || (i == 3)) +
+            ((j == 0) || (j == 3)) +
+            ((k == 0) || (k == 3))
             );
         set_led(input, k,j,i,(is_edge >=2));
       }
@@ -357,8 +362,8 @@ void select_cell(unsigned char cell){
 }
 
 void write_signal(){
-  digitalWrite(OUTPUT_CONFIRM_PIN,false);
   digitalWrite(OUTPUT_CONFIRM_PIN,true);
+  digitalWrite(OUTPUT_CONFIRM_PIN,false);
 }
 
 int write_octet(unsigned char data, unsigned char cell){
@@ -385,6 +390,7 @@ int write_buffer_EM_cell(unsigned char cell) { // external memory cell
   for (int y=0; y<LAYER_COUNT; y++){
     for (int x=0; x<COLUMN_COUNT; x++){
       write_octet(buffer[y][x], cell);
+      delay(0.01);
     }
   }
 
@@ -410,11 +416,11 @@ void loop() {
   /* } */
   /* set_full(buffer,true); */
 
-
+  /* unsigned int offset_new = step / move_speed; */
   //Main loop
   /* display_values(); */
   write_buffer_EM_cell(0);
-  delay(1000);
+  delay(10);
   
   /* potenciometer_value = analogRead(A5); */
   /* analogWrite(pwm_pin,potenciometer_value/4); */
