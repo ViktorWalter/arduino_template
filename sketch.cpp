@@ -4,7 +4,7 @@
 #define COLUMN_COUNT 8 //Y
 #define LAYER_COUNT 8 //Z
 
-#define CELL_COUNT 4 //CELLS
+/* #define CELL_COUNT 4 //CELLS */
 
 /* #define lowbit_row 0 //pin of the lowest bit */
 /* #define lowbit_column 0 //pin of the lowest bit */
@@ -16,10 +16,13 @@
 #define OUTPUT_CONFIRM_PIN 8
 #define ADDRESS_RESET_PIN 13
 
-#define CELL_PIN_0 9
-#define CELL_PIN_1 10
-#define CELL_PIN_2 11
-#define CELL_PIN_3 12
+/* #define CELL_PIN_0 9 */
+/* #define CELL_PIN_1 10 */
+/* #define CELL_PIN_2 11 */
+/* #define CELL_PIN_3 12 */
+
+#define PWM_PIN 11 // controlled with TCCR2B
+#define POT_PIN A0 // controlled with TCCR2B
 
 #define DATA_BUS PORTD
 /* #define split_demux false */
@@ -117,7 +120,12 @@ void setup() {
   //0.1s * 62.5 kHz = 6250 pulses
   OCR1A = 6250;             //Finally we set compare register A to this value  
 
-  /* pinMode(pwm_pin, OUTPUT); */
+  // Pins D3 and D11 - 62.5 kHz
+  pinMode(PWM_PIN, OUTPUT);
+  TCCR2B = 0b00000001; // x1
+  TCCR2A = 0b00000011; // fast pwm
+
+  pinMode(POT_PIN,INPUT);
 
   sei();
 }
@@ -354,24 +362,25 @@ ISR(TIMER1_COMPA_vect){
   step++;
 }
 
-void select_cell(unsigned char cell){
-  digitalWrite(CELL_PIN_0,cell^B00000001);
-  digitalWrite(CELL_PIN_1,cell^B00000010);
-  digitalWrite(CELL_PIN_2,cell^B00000100);
-  digitalWrite(CELL_PIN_3,cell^B00001000);
-}
+/* void select_cell(unsigned char cell){ */
+/*   digitalWrite(CELL_PIN_0,cell^B00000001); */
+/*   digitalWrite(CELL_PIN_1,cell^B00000010); */
+/*   digitalWrite(CELL_PIN_2,cell^B00000100); */
+/*   digitalWrite(CELL_PIN_3,cell^B00001000); */
+/* } */
 
 void write_signal(){
   digitalWrite(OUTPUT_CONFIRM_PIN,true);
   digitalWrite(OUTPUT_CONFIRM_PIN,false);
 }
 
-int write_octet(unsigned char data, unsigned char cell){
-  if ((cell < 0) || (cell >= CELL_COUNT)){
-    return -1;
-  }
+/* int write_octet(unsigned char data, unsigned char cell){ */
+int write_octet(unsigned char data){
+  /* if ((cell < 0) || (cell >= CELL_COUNT)){ */
+  /*   return -1; */
+  /* } */
 
-  select_cell(cell);
+  /* select_cell(cell); */
 
   DATA_BUS = data;
 
@@ -380,16 +389,18 @@ int write_octet(unsigned char data, unsigned char cell){
   return 0;
 }
 
-int write_buffer_EM_cell(unsigned char cell) { // external memory cell 
+/* int write_buffer_EM_cell(unsigned char cell) { // external memory cell */ 
+int write_buffer_EM() { // external memory cell 
 
   reset_address_counter();
-  if ((cell < 0) || (cell >= CELL_COUNT)){
-    return -1;
-  }
+  /* if ((cell < 0) || (cell >= CELL_COUNT)){ */
+  /*   return -1; */
+  /* } */
 
   for (int y=0; y<LAYER_COUNT; y++){
     for (int x=0; x<COLUMN_COUNT; x++){
-      write_octet(buffer[y][x], cell);
+      /* write_octet(buffer[y][x], cell); */
+      write_octet(buffer[y][x]);
       delay(0.01);
     }
   }
@@ -397,6 +408,17 @@ int write_buffer_EM_cell(unsigned char cell) { // external memory cell
   return 0;
 
 } 
+
+int set_brightness(unsigned char value){
+  analogWrite(PWM_PIN,value);
+  return 0
+}
+
+int set_brightness_from_pot(){
+  unsigned char value = analogRead(POT_PIN);
+  set_brightness(value)
+  return 0
+}
 
 void loop() {
 
@@ -419,7 +441,8 @@ void loop() {
   /* unsigned int offset_new = step / move_speed; */
   //Main loop
   /* display_values(); */
-  write_buffer_EM_cell(0);
+  /* write_buffer_EM_cell(0); */
+  write_buffer_EM();
   delay(10);
   
   /* potenciometer_value = analogRead(A5); */
