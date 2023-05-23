@@ -411,13 +411,13 @@ int write_buffer_EM() { // external memory cell
 
 int set_brightness(unsigned char value){
   analogWrite(PWM_PIN,value);
-  return 0
+  return 0;
 }
 
 int set_brightness_from_pot(){
   unsigned char value = analogRead(POT_PIN);
-  set_brightness(value)
-  return 0
+  set_brightness(value);
+  return 0;
 }
 
 void loop() {
