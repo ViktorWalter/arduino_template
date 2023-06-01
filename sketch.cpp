@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 
 #define ROW_COUNT 8 //X
 #define COLUMN_COUNT 8 //Y
@@ -22,7 +23,7 @@
 /* #define CELL_PIN_3 12 */
 
 #define PWM_PIN 11 // controlled with TCCR2B
-#define POT_PIN A0 // controlled with TCCR2B
+#define POT_PIN A3 // controlled with TCCR2B
 
 #define DATA_BUS PORTD
 /* #define split_demux false */
@@ -409,13 +410,13 @@ int write_buffer_EM() { // external memory cell
 
 } 
 
-int set_brightness(unsigned char value){
-  analogWrite(PWM_PIN,value);
+int set_brightness(unsigned short value){
+  analogWrite(PWM_PIN,value>>2);
   return 0;
 }
 
 int set_brightness_from_pot(){
-  unsigned char value = analogRead(POT_PIN);
+  unsigned short value = analogRead(POT_PIN);
   set_brightness(value);
   return 0;
 }
@@ -442,6 +443,8 @@ void loop() {
   //Main loop
   /* display_values(); */
   /* write_buffer_EM_cell(0); */
+
+  set_brightness_from_pot();
   write_buffer_EM();
   delay(10);
   

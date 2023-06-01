@@ -29,7 +29,8 @@ CPP_FLAGS = $(GENERAL_FLAGS) -fno-exceptions
 CC_FLAGS  = $(GENERAL_FLAGS)
 
 # location of include files
-INCLUDE_FILES = "-I$(ARDUINO_DIR)hardware/arduino/cores/arduino" "-I$(ARDUINO_DIR)hardware/arduino/variants/standard"
+INCLUDE_FILES = "-I$(ARDUINO_DIR)hardware/arduino/cores/arduino" "-I$(ARDUINO_DIR)hardware/arduino/variants/standard" "-Iinclude"
+
 
 # library sources
 LIBRARY_DIR = "$(ARDUINO_DIR)hardware/arduino/cores/arduino/"
@@ -51,6 +52,7 @@ all:
 	$(CC) $(CC_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)wiring_shift.c -o wiring_shift.c.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)CDC.cpp -o CDC.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)HardwareSerial.cpp -o HardwareSerial.cpp.o 
+	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) include/SoftwareSerial.cpp -o SoftwareSerial.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)HID.cpp -o HID.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)IPAddress.cpp -o IPAddress.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)main.cpp -o main.cpp.o 
@@ -72,6 +74,7 @@ all:
 	$(AR) rcs core.a wiring_shift.c.o 
 	$(AR) rcs core.a CDC.cpp.o 
 	$(AR) rcs core.a HardwareSerial.cpp.o 
+	$(AR) rcs core.a SoftwareSerial.cpp.o 
 	$(AR) rcs core.a HID.cpp.o 
 	$(AR) rcs core.a IPAddress.cpp.o 
 	$(AR) rcs core.a main.cpp.o 
@@ -98,6 +101,7 @@ on:
 	$(CC) $(CC_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)wiring_shift.c -o wiring_shift.c.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)CDC.cpp -o CDC.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)HardwareSerial.cpp -o HardwareSerial.cpp.o 
+	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) include/SoftwareSerial.cpp -o SoftwareSerial.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)HID.cpp -o HID.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)IPAddress.cpp -o IPAddress.cpp.o 
 	$(CPP) $(CPP_FLAGS) $(INCLUDE_FILES) $(LIBRARY_DIR)main.cpp -o main.cpp.o 
@@ -119,6 +123,7 @@ on:
 	$(AR) rcs core.a wiring_shift.c.o 
 	$(AR) rcs core.a CDC.cpp.o 
 	$(AR) rcs core.a HardwareSerial.cpp.o 
+	$(AR) rcs core.a SoftwareSerial.cpp.o 
 	$(AR) rcs core.a HID.cpp.o 
 	$(AR) rcs core.a IPAddress.cpp.o 
 	$(AR) rcs core.a main.cpp.o 
