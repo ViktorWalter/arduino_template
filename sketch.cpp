@@ -1,5 +1,6 @@
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+#include <HardwareSerial.h>
+#include <NeoSWSerial.h>
 
 #define ROW_COUNT 8 //X
 #define COLUMN_COUNT 8 //Y
@@ -24,6 +25,9 @@
 
 #define PWM_PIN 11 // controlled with TCCR2B
 #define POT_PIN A3 // controlled with TCCR2B
+		   //
+#define RX_PIN A1
+#define TX_PIN A2
 
 #define DATA_BUS PORTD
 /* #define split_demux false */
@@ -61,13 +65,31 @@ unsigned long move_speed = 1;
 
 /* int potenciometer_value; */
 
+  String inData;
+
+NeoSWSerial mySerial(RX_PIN,TX_PIN);
+
+       
+static void handleRxChar( uint8_t c ) {
+	inData += char(c);
+}
+
 void reset_address_counter(){
   digitalWrite(ADDRESS_RESET_PIN,false);
   digitalWrite(ADDRESS_RESET_PIN,true);
 }
 
 void setup() {
+
   cli();                      //stop interrupts for till we make the settings */
+			      //
+  Serial.begin(9600);
+
+  pinMode(RX_PIN, INPUT);
+  pinMode(TX_PIN, OUTPUT);
+  mySerial.attachInterrupt(handleRxChar);
+  mySerial.begin(9600);
+
 
   reset_address_counter();
 
@@ -86,9 +108,9 @@ void setup() {
     DDRD = (((unsigned char)1)<<ROW_COUNT)-1;
   }
 
-  DDRB = B00000011;
+  //DDRB = B00000011;
 
-  DDRC = B00001111;
+  //DDRC = B00001111;
 
   /* slider_row_start = slider_row_start << lowbit_row; */
   /* slider_row = slider_row << lowbit_row; */
@@ -446,8 +468,14 @@ void loop() {
 
   set_brightness_from_pot();
   write_buffer_EM();
-  delay(10);
-  
+  delay(1000);
+
+  int bytes = Serial.write("\nSHIT: \n");
+  bytes = Serial.print(inData);
+
+  mySerial.write("\nWAAAT\n");
+  mySerial.println(inData);
+
   /* potenciometer_value = analogRead(A5); */
   /* analogWrite(pwm_pin,potenciometer_value/4); */
 
